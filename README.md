@@ -11,19 +11,22 @@ App web de contagem de estoque por SKU. Funciona direto no navegador (desktop e 
 - Totais de SKUs e unidades em tempo real
 - Nome do responsável e data da contagem
 - Prévia do relatório e download em `.txt`
-- Botão **Enviar no WhatsApp**: abre o compartilhamento do celular com o `.txt` já anexado (no desktop, baixa o arquivo e abre o WhatsApp Web)
+- Botão **Enviar no WhatsApp** com três níveis de fallback:
+  1. compartilha o `.txt` já anexado pela folha de compartilhamento do celular;
+  2. se o aparelho não compartilhar arquivos, compartilha o relatório como texto;
+  3. se nem isso, copia o relatório e abre o app do WhatsApp para colar.
 - Dados mantidos no navegador (localStorage) entre sessões
+- Página única, sem dependências externas — funciona offline depois de carregada
 
 ## Uso local
 
-Baixe o repositório e abra `index.html` no navegador. Todos os arquivos precisam ficar na mesma pasta.
+Baixe `index.html` e abra no navegador. É um arquivo único e autossuficiente.
 
 ## Estrutura
 
 | Arquivo | Função |
 |---|---|
-| `index.html` | Página do app (marcação + lógica) |
-| `support.js` | Runtime que renderiza a página |
-| `styles.css` | Tokens de tema e estilos |
-| `_ds/` | Design system de origem (referência) |
+| `index.html` | O app inteiro: HTML, CSS e JavaScript em um arquivo só |
+| `Centralux Contagem.dc.html` | Versão original do editor visual (referência) |
+| `support.js`, `styles.css`, `_ds/` | Arquivos da versão original — não são usados pelo `index.html` |
 | `.nojekyll` | Impede o GitHub Pages de ignorar a pasta `_ds` |

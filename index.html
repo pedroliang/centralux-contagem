@@ -1,339 +1,521 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>CENTRALUX CONTAGEM</title>
 <meta name="description" content="Contagem de estoque por SKU - CENTRALUX">
-<meta name="theme-color" content="#12141f">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%2312141f%22/><text x=%2216%22 y=%2222%22 font-size=%2217%22 font-family=%22sans-serif%22 font-weight=%22600%22 fill=%22%237c9cff%22 text-anchor=%22middle%22>C</text></svg>">
-<script src="./support.js"></script>
+<meta name="theme-color" content="#161826">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23161826%22/><text x=%2216%22 y=%2222%22 font-size=%2217%22 font-family=%22sans-serif%22 font-weight=%22600%22 fill=%22%23d2cefd%22 text-anchor=%22middle%22>C</text></svg>">
+<style>
+:root {
+  --bg: #161826;
+  --surface: #232532;
+  --text: #e9e9ed;
+  --accent: #9184d9;
+  --accent-100: #f5f4ff;
+  --accent-200: #e7e5fe;
+  --accent-300: #d2cefd;
+  --accent-400: #b5abfc;
+  --n200: #e4e7f5;
+  --n300: #cfd3e5;
+  --n400: #b2b6ca;
+  --n500: #9397ab;
+  --n600: #75798c;
+  --n700: #595d6c;
+  --n800: #3f424d;
+  --n900: #292b31;
+  --verde: #4fd18b;
+  --verde-claro: #8ee6b5;
+  --alerta: #f0a24a;
+  --r-md: 8px;
+  --r-lg: 14px;
+  --sh-sm: 0 0 0 1px #3f424d;
+  --sh-md: 0 0 0 1px #595d6c, 0 6px 18px rgba(0,0,0,0.55);
+  --sh-lg: 0 0 0 1px #9397ab, 0 16px 40px rgba(0,0,0,0.65);
+  --fonte: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--fonte);
+  -webkit-text-size-adjust: 100%;
+}
+button { font: inherit; }
+input { font-family: inherit; }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+.page { min-height: 100vh; background: radial-gradient(120% 60% at 50% 0%, #1d2033 0%, var(--bg) 60%); padding-bottom: 104px; }
+.wrap { max-width: 520px; margin: 0 auto; padding: 0 16px; }
+
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: calc(20px + env(safe-area-inset-top)) 0 14px; }
+.marca { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+.marca span { color: var(--accent-300); font-weight: 500; }
+.data { font-size: 12px; color: var(--n500); margin-top: 2px; }
+
+.resp { display: flex; align-items: center; gap: 8px; padding: 0 0 14px; }
+.resp label { font-size: 12px; color: var(--n500); white-space: nowrap; }
+.resp input { flex: 1; min-width: 0; background: transparent; border: none; border-bottom: 1px solid var(--n800); color: var(--text); font-size: 16px; padding: 6px 2px; }
+
+.card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-sm); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.linha { display: grid; grid-template-columns: 1fr 104px; gap: 10px; }
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.rot { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--n500); }
+.campo input { height: 52px; background: var(--bg); border: 1px solid var(--n800); border-radius: var(--r-md); color: var(--text); font-size: 18px; padding: 0 12px; width: 100%; }
+#qtd { text-align: center; }
+.btn-add { height: 52px; background: transparent; border: 1px solid var(--accent); color: var(--accent-200); border-radius: var(--r-md); font-size: 15px; font-weight: 500; letter-spacing: 0.02em; cursor: pointer; }
+.btn-add:active { border-color: var(--accent-400); color: var(--accent-100); }
+.erro { font-size: 12px; color: var(--alerta); }
+
+.totais { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 2px 10px; }
+.totais .nums { display: flex; gap: 18px; align-items: baseline; }
+.num { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.num.verde { color: var(--verde); }
+.uni { font-size: 11px; color: var(--n500); margin-left: 5px; text-transform: uppercase; letter-spacing: 0.08em; }
+.btn-limpar { background: transparent; border: none; color: var(--n600); font-size: 12px; cursor: pointer; padding: 4px; }
+
+.vazio { border: 1px dashed var(--n800); border-radius: var(--r-lg); padding: 30px 18px; text-align: center; color: var(--n600); font-size: 13px; line-height: 1.6; }
+
+ul.itens { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+ul.itens li { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--sh-sm); padding: 10px 10px 10px 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+.it-sku { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.it-hora { font-size: 11px; color: var(--n600); }
+.it-ctrl { display: flex; align-items: center; gap: 4px; }
+.it-ctrl button.step { width: 44px; height: 44px; flex: none; background: transparent; border: 1px solid var(--n800); border-radius: var(--r-md); color: var(--n300); font-size: 20px; line-height: 1; cursor: pointer; }
+.it-ctrl button.step:active { background: var(--n900); }
+.it-ctrl input { width: 62px; height: 44px; text-align: center; background: var(--bg); border: 1px solid var(--n800); border-radius: var(--r-md); color: var(--text); font-size: 17px; font-variant-numeric: tabular-nums; }
+.it-ctrl button.del { width: 36px; height: 44px; flex: none; background: transparent; border: none; color: var(--n700); font-size: 16px; cursor: pointer; }
+
+.previa-sec { margin-top: 24px; border-top: 1px solid var(--n900); padding-top: 16px; }
+.previa-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.btn-copiar { background: transparent; border: 1px solid var(--n800); color: var(--n300); border-radius: var(--r-md); padding: 6px 12px; font-size: 12px; cursor: pointer; }
+pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); border-radius: var(--r-md); padding: 12px; font-size: 11.5px; line-height: 1.6; color: var(--n400); overflow-x: auto; white-space: pre; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.barra { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(22,24,38,0.92); backdrop-filter: blur(10px); border-top: 1px solid var(--n900); padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); z-index: 30; }
+.barra .grid { max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px; }
+.btn-baixar { height: 50px; background: transparent; border: 1px solid var(--n700); color: var(--n200); border-radius: var(--r-md); font-size: 14px; cursor: pointer; }
+.btn-whats { height: 50px; background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid var(--verde); color: var(--verde-claro); border-radius: var(--r-md); font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-whats:active { background: color-mix(in srgb, #4fd18b 22%, transparent); color: #d6f7e5; }
+
+.overlay { position: fixed; inset: 0; background: rgba(10,11,18,0.72); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 40; }
+.modal { width: 100%; max-width: 400px; background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-lg); padding: 20px; }
+.modal .risco { width: 34px; height: 2px; background: var(--alerta); margin-bottom: 14px; }
+.modal h2 { font-size: 17px; font-weight: 500; margin: 0 0 6px; }
+.modal p { font-size: 13.5px; color: var(--n400); line-height: 1.55; margin: 0; }
+.modal .acoes { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.modal .acoes button { height: 48px; border-radius: var(--r-md); font-size: 14px; cursor: pointer; }
+.b-somar { background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid var(--verde); color: var(--verde-claro); }
+.b-sub { background: transparent; border: 1px solid var(--n700); color: var(--n200); }
+.b-cancel { height: 40px !important; background: transparent; border: none; color: var(--n500); font-size: 13px; }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 96px; z-index: 60; max-width: calc(100% - 32px); background: var(--n900); border: 1px solid var(--n800); color: var(--n200); border-radius: var(--r-md); padding: 11px 16px; font-size: 13px; line-height: 1.5; box-shadow: var(--sh-md); text-align: center; }
+.hide { display: none !important; }
+</style>
 </head>
 <body>
-<x-dc>
-<helmet>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css">
-<style>
-  body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); -webkit-text-size-adjust: 100%; }
-  * { box-sizing: border-box; }
-  a { color: var(--color-accent-300); text-decoration: none; }
-  a:hover { color: var(--color-accent-200); }
-  input { font-family: inherit; }
-  input:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  input[type=number]::-webkit-inner-spin-button { display: none; }
-</style>
-</helmet>
-<div style="min-height: 100vh; background: radial-gradient(120% 60% at 50% 0%, #1d2033 0%, var(--color-bg) 60%); padding-bottom: 96px;">
-  <div style="max-width: 520px; margin: 0 auto; padding: 0 16px;">
 
-    <header style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 20px 0 14px;">
-      <div style="display: flex; flex-direction: column; gap: 2px;">
-        <div style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">CENTRALUX <span style="color: var(--color-accent-300); font-weight: 500;">CONTAGEM</span></div>
-        <div style="font-size: 12px; color: var(--color-neutral-500);">{{ dataHoje }}</div>
+<div class="page">
+  <div class="wrap">
+
+    <header>
+      <div>
+        <div class="marca">CENTRALUX <span>CONTAGEM</span></div>
+        <div class="data" id="dataHoje"></div>
       </div>
     </header>
 
-    <div style="display: flex; align-items: center; gap: 8px; padding: 0 0 14px;">
-      <span style="font-size: 12px; color: var(--color-neutral-500); white-space: nowrap;">Responsável</span>
-      <input value="{{ responsavel }}" onChange="{{ setResponsavel }}" placeholder="seu nome" style="flex: 1; min-width: 0; background: transparent; border: none; border-bottom: 1px solid var(--color-neutral-800); color: var(--color-text); font-size: 14px; padding: 6px 2px;">
+    <div class="resp">
+      <label for="responsavel">Responsável</label>
+      <input id="responsavel" placeholder="seu nome" autocomplete="off">
     </div>
 
-    <section style="background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-      <div style="display: grid; grid-template-columns: 1fr 104px; gap: 10px;">
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <label style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500);">SKU</label>
-          <input ref="{{ skuRef }}" value="{{ sku }}" onChange="{{ setSku }}" onKeyDown="{{ onKeySku }}" placeholder="ex. 7891234" autoCapitalize="characters" autoComplete="off" style="height: 52px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 18px; padding: 0 12px; width: 100%;">
+    <section class="card">
+      <div class="linha">
+        <div class="campo">
+          <span class="rot">SKU</span>
+          <input id="sku" placeholder="ex. 7891234" autocapitalize="characters" autocomplete="off" enterkeyhint="next">
         </div>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <label style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500);">Qtd</label>
-          <input ref="{{ qtdRef }}" value="{{ qtd }}" onChange="{{ setQtd }}" onKeyDown="{{ onKeyQtd }}" type="number" inputMode="numeric" placeholder="1" style="height: 52px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 18px; padding: 0 12px; width: 100%; text-align: center;">
+        <div class="campo">
+          <span class="rot">Qtd</span>
+          <input id="qtd" type="number" inputmode="numeric" placeholder="1" enterkeyhint="done">
         </div>
       </div>
-      <button onClick="{{ adicionar }}" style="height: 52px; background: transparent; border: 1px solid var(--color-accent); color: var(--color-accent-200); border-radius: var(--radius-md); font-size: 15px; font-weight: 500; letter-spacing: 0.02em; cursor: pointer;" style-hover="background: color-mix(in srgb, var(--color-accent) 14%, transparent);" style-active="border-color: var(--color-accent-400); color: var(--color-accent-100);">Adicionar à contagem</button>
-      <sc-if value="{{ erro }}" hint-placeholder-val="{{ false }}">
-        <div style="font-size: 12px; color: #f0a24a;">{{ erro }}</div>
-      </sc-if>
+      <button class="btn-add" id="btnAdd">Adicionar à contagem</button>
+      <div class="erro hide" id="erro"></div>
     </section>
 
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 2px 10px;">
-      <div style="display: flex; gap: 18px; align-items: baseline;">
-        <div><span style="font-size: 20px; font-weight: 600;">{{ totalSkus }}</span><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: 5px; text-transform: uppercase; letter-spacing: 0.08em;">SKUs</span></div>
-        <div><span style="font-size: 20px; font-weight: 600; color: #4fd18b;">{{ totalUnidades }}</span><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: 5px; text-transform: uppercase; letter-spacing: 0.08em;">unid.</span></div>
+    <div class="totais">
+      <div class="nums">
+        <div><span class="num" id="totSkus">0</span><span class="uni">SKUs</span></div>
+        <div><span class="num verde" id="totUnid">0</span><span class="uni">unid.</span></div>
       </div>
-      <sc-if value="{{ temItens }}" hint-placeholder-val="{{ false }}">
-        <button onClick="{{ limparTudo }}" style="background: transparent; border: none; color: var(--color-neutral-600); font-size: 12px; cursor: pointer; padding: 4px;" style-hover="color: #f0a24a;">Limpar tudo</button>
-      </sc-if>
+      <button class="btn-limpar hide" id="btnLimpar">Limpar tudo</button>
     </div>
 
-    <sc-if value="{{ vazio }}" hint-placeholder-val="{{ false }}">
-      <div style="border: 1px dashed var(--color-neutral-800); border-radius: var(--radius-lg); padding: 30px 18px; text-align: center; color: var(--color-neutral-600); font-size: 13px;">Nenhum SKU contado ainda.<br>Digite o código e a quantidade acima.</div>
-    </sc-if>
+    <div class="vazio" id="vazio">Nenhum SKU contado ainda.<br>Digite o código e a quantidade acima.</div>
 
-    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;">
-      <sc-for list="{{ itens }}" as="item" hint-placeholder-count="3">
-        <li style="background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 10px 10px 10px 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;">
-          <div style="min-width: 0; display: flex; flex-direction: column; gap: 3px;">
-            <span style="font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ item.sku }}</span>
-            <span style="font-size: 11px; color: var(--color-neutral-600);">{{ item.hora }}</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 4px;">
-            <button onClick="{{ item.menos }}" style="width: 44px; height: 44px; flex: none; background: transparent; border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-neutral-300); font-size: 20px; line-height: 1; cursor: pointer;" style-hover="background: var(--color-neutral-900); border-color: var(--color-neutral-700);">−</button>
-            <input value="{{ item.qtd }}" onChange="{{ item.setQtd }}" type="number" inputMode="numeric" style="width: 62px; height: 44px; text-align: center; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 17px; font-variant-numeric: tabular-nums;">
-            <button onClick="{{ item.mais }}" style="width: 44px; height: 44px; flex: none; background: transparent; border: 1px solid color-mix(in srgb, #4fd18b 45%, transparent); border-radius: var(--radius-md); color: #4fd18b; font-size: 20px; line-height: 1; cursor: pointer;" style-hover="background: color-mix(in srgb, #4fd18b 14%, transparent);">+</button>
-            <button onClick="{{ item.remover }}" style="width: 36px; height: 44px; flex: none; background: transparent; border: none; color: var(--color-neutral-700); font-size: 16px; cursor: pointer;" style-hover="color: #f0a24a;">✕</button>
-          </div>
-        </li>
-      </sc-for>
-    </ul>
+    <ul class="itens" id="lista"></ul>
 
-    <sc-if value="{{ temItens }}" hint-placeholder-val="{{ false }}">
-      <section style="margin-top: 24px; border-top: 1px solid var(--color-neutral-900); padding-top: 16px;">
-        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500); margin-bottom: 8px;">Prévia do relatório</div>
-        <pre style="margin: 0; background: var(--color-bg); border: 1px solid var(--color-neutral-900); border-radius: var(--radius-md); padding: 12px; font-size: 11.5px; line-height: 1.6; color: var(--color-neutral-400); overflow-x: auto; white-space: pre; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">{{ previa }}</pre>
-      </section>
-    </sc-if>
-  </div>
-
-  <div style="position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--color-bg) 88%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--color-neutral-900); padding: 12px 16px calc(12px + env(safe-area-inset-bottom));">
-    <div style="max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px;">
-      <button onClick="{{ baixarTxt }}" style="height: 50px; background: transparent; border: 1px solid var(--color-neutral-700); color: var(--color-neutral-200); border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: var(--color-neutral-900); border-color: var(--color-neutral-600);">Baixar .txt</button>
-      <button onClick="{{ enviarWhats }}" style="height: 50px; background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid #4fd18b; color: #8ee6b5; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" style-hover="background: color-mix(in srgb, #4fd18b 22%, transparent); color: #d6f7e5;">Enviar no WhatsApp</button>
-    </div>
-  </div>
-
-  <sc-if value="{{ dup }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ fecharDup }}" style="position: fixed; inset: 0; background: rgba(10,11,18,0.72); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 40;">
-      <div onClick="{{ pararClique }}" style="width: 100%; max-width: 400px; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 20px;">
-        <div style="width: 34px; height: 2px; background: #f0a24a; margin-bottom: 14px;"></div>
-        <div style="font-size: 17px; font-weight: 500; margin-bottom: 6px;">SKU já contado</div>
-        <div style="font-size: 13.5px; color: var(--color-neutral-400); line-height: 1.55;">{{ dupTexto }}</div>
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px;">
-          <button onClick="{{ dupSomar }}" style="height: 48px; background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid #4fd18b; color: #8ee6b5; border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: color-mix(in srgb, #4fd18b 22%, transparent);">{{ dupSomarLabel }}</button>
-          <button onClick="{{ dupSubstituir }}" style="height: 48px; background: transparent; border: 1px solid var(--color-neutral-700); color: var(--color-neutral-200); border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: var(--color-neutral-900);">{{ dupSubstituirLabel }}</button>
-          <button onClick="{{ fecharDup }}" style="height: 40px; background: transparent; border: none; color: var(--color-neutral-500); font-size: 13px; cursor: pointer;" style-hover="color: var(--color-neutral-300);">Cancelar</button>
-        </div>
+    <section class="previa-sec hide" id="previaSec">
+      <div class="previa-top">
+        <span class="rot">Prévia do relatório</span>
+        <button class="btn-copiar" id="btnCopiar">Copiar</button>
       </div>
-    </div>
-  </sc-if>
-
-  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
-    <div style="position: fixed; left: 50%; transform: translateX(-50%); bottom: 92px; z-index: 60; background: var(--color-neutral-900); border: 1px solid var(--color-neutral-800); color: var(--color-neutral-200); border-radius: var(--radius-md); padding: 10px 16px; font-size: 13px; box-shadow: var(--shadow-md);">{{ toast }}</div>
-  </sc-if>
+      <pre class="previa" id="previa"></pre>
+    </section>
+  </div>
 </div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;autoSomar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Comportamento&quot;},&quot;formatoTxt&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;detalhado&quot;,&quot;csv&quot;],&quot;default&quot;:&quot;detalhado&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Relatório&quot;}}">
-const KEY = 'centralux-contagem-v1';
 
-class Component extends DCLogic {
-  state = {
-    responsavel: '', sku: '', qtd: '', itens: [],
-    erro: '', toast: '', dup: null
-  };
+<div class="barra">
+  <div class="grid">
+    <button class="btn-baixar" id="btnBaixar">Baixar .txt</button>
+    <button class="btn-whats" id="btnWhats">Enviar no WhatsApp</button>
+  </div>
+</div>
 
-  skuRef = React.createRef();
-  qtdRef = React.createRef();
+<div class="overlay hide" id="overlayDup">
+  <div class="modal">
+    <div class="risco"></div>
+    <h2>SKU já contado</h2>
+    <p id="dupTexto"></p>
+    <div class="acoes">
+      <button class="b-somar" id="btnSomar"></button>
+      <button class="b-sub" id="btnSubstituir"></button>
+      <button class="b-cancel" id="btnCancelarDup">Cancelar</button>
+    </div>
+  </div>
+</div>
 
-  componentDidMount() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) {
-        const d = JSON.parse(raw);
-        this.setState({
-          responsavel: d.responsavel || '',
-          itens: Array.isArray(d.itens) ? d.itens : []
-        });
-      }
-    } catch (e) {}
+<div class="toast hide" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "centralux-contagem-v1";
+  var itens = [];
+  var dup = null;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var elResp = $("responsavel"), elSku = $("sku"), elQtd = $("qtd");
+  var elErro = $("erro"), elLista = $("lista"), elVazio = $("vazio");
+  var elTotSkus = $("totSkus"), elTotUnid = $("totUnid"), elLimpar = $("btnLimpar");
+  var elPreviaSec = $("previaSec"), elPrevia = $("previa");
+  var elOverlay = $("overlayDup"), elDupTexto = $("dupTexto");
+  var elSomar = $("btnSomar"), elSubstituir = $("btnSubstituir");
+  var elToast = $("toast");
+
+  /* ---------- utilitários ---------- */
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  function hora() {
+    return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
   }
 
-  save(next) {
-    const s = { ...this.state, ...next };
-    try {
-      localStorage.setItem(KEY, JSON.stringify({ responsavel: s.responsavel, itens: s.itens }));
-    } catch (e) {}
-  }
-
-  set(next) { this.setState(next); this.save(next); }
-
-  flash(msg) {
-    this.setState({ toast: msg });
-    clearTimeout(this._t);
-    this._t = setTimeout(() => this.setState({ toast: '' }), 2600);
-  }
-
-  hora() {
-    return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  parseQtd(v) {
-    const n = parseInt(String(v).replace(/[^0-9-]/g, ''), 10);
+  function parseQtd(v) {
+    var n = parseInt(String(v).replace(/[^0-9-]/g, ""), 10);
     return isNaN(n) ? null : n;
   }
 
-  adicionar = () => {
-    const sku = this.state.sku.trim().toUpperCase();
-    const q = this.state.qtd.trim() === '' ? 1 : this.parseQtd(this.state.qtd);
-    if (!sku) { this.setState({ erro: 'Digite o SKU.' }); return; }
-    if (q === null || q === 0) { this.setState({ erro: 'Quantidade inválida.' }); return; }
-    const existente = this.state.itens.find(i => i.sku === sku);
-    if (existente) {
-      if (this.props.autoSomar) {
-        this.aplicar(sku, existente.qtd + q);
-        this.flash(sku + ' somado — agora ' + (existente.qtd + q));
-      } else {
-        this.setState({ dup: { sku, atual: existente.qtd, add: q }, erro: '' });
-      }
-      return;
-    }
-    const itens = [{ sku, qtd: q, hora: this.hora() }, ...this.state.itens];
-    this.set({ itens, sku: '', qtd: '', erro: '' });
-    if (this.skuRef.current) this.skuRef.current.focus();
-  };
-
-  aplicar(sku, novaQtd) {
-    const itens = this.state.itens.map(i => i.sku === sku ? { ...i, qtd: novaQtd, hora: this.hora() } : i);
-    this.set({ itens, sku: '', qtd: '', dup: null, erro: '' });
-    if (this.skuRef.current) this.skuRef.current.focus();
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
   }
 
-  onKeySku = (e) => { if (e.key === 'Enter' && this.qtdRef.current) this.qtdRef.current.focus(); };
-  onKeyQtd = (e) => { if (e.key === 'Enter') this.adicionar(); };
-
-  txt() {
-    const it = this.state.itens;
-    const total = it.reduce((a, i) => a + i.qtd, 0);
-    const agora = new Date();
-    const data = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const linhas = [];
-    linhas.push('CENTRALUX CONTAGEM');
-    linhas.push('Data: ' + data);
-    linhas.push('Responsavel: ' + (this.state.responsavel.trim() || '-'));
-    linhas.push('SKUs contados: ' + it.length + '   Total de unidades: ' + total);
-    linhas.push('------------------------------');
-    if (this.props.formatoTxt === 'csv') {
-      linhas.push('SKU;QTD');
-      it.forEach(i => linhas.push(i.sku + ';' + i.qtd));
-    } else {
-      const w = Math.max(12, ...it.map(i => i.sku.length));
-      it.forEach(i => linhas.push(i.sku.padEnd(w, ' ') + '  ' + String(i.qtd).padStart(5, ' ')));
-      linhas.push('------------------------------');
-      linhas.push('TOTAL'.padEnd(w, ' ') + '  ' + String(total).padStart(5, ' '));
-    }
-    return linhas.join('\n');
+  var toastTimer = null;
+  function flash(msg, ms) {
+    elToast.textContent = msg;
+    elToast.classList.remove("hide");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { elToast.classList.add("hide"); }, ms || 2600);
   }
 
-  nomeArquivo() {
-    const d = new Date();
-    const p = n => String(n).padStart(2, '0');
-    return 'contagem-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '.txt';
+  function erro(msg) {
+    if (!msg) { elErro.classList.add("hide"); return; }
+    elErro.textContent = msg;
+    elErro.classList.remove("hide");
   }
 
-  baixarTxt = () => {
-    if (!this.state.itens.length) { this.flash('Nenhum SKU contado.'); return; }
-    const blob = new Blob([this.txt()], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = this.nomeArquivo();
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    this.flash('Arquivo ' + this.nomeArquivo() + ' baixado.');
-  };
+  /* ---------- persistência ---------- */
 
-  enviarWhats = () => {
-    const itens = this.state.itens;
-    if (!itens.length) { this.flash('Conte algum SKU primeiro.'); return; }
-    const nome = this.nomeArquivo();
-    let arquivo = null;
+  function carregar() {
     try {
-      arquivo = new File([this.txt()], nome, { type: 'text/plain' });
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      elResp.value = d.responsavel || "";
+      itens = Array.isArray(d.itens) ? d.itens : [];
     } catch (e) {}
-    if (arquivo && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
-      navigator.share({ files: [arquivo], title: 'CENTRALUX CONTAGEM' })
-        .then(() => this.flash('Contagem enviada.'))
-        .catch(err => { if (!err || err.name !== 'AbortError') this.semCompartilhamento(); });
+  }
+
+  function salvar() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ responsavel: elResp.value, itens: itens }));
+    } catch (e) {}
+  }
+
+  /* ---------- relatório ---------- */
+
+  function totalUnidades() {
+    return itens.reduce(function (a, i) { return a + i.qtd; }, 0);
+  }
+
+  function txt() {
+    var total = totalUnidades();
+    var agora = new Date();
+    var data = agora.toLocaleDateString("pt-BR") + " " +
+      agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    var w = 12;
+    itens.forEach(function (i) { if (i.sku.length > w) w = i.sku.length; });
+    var l = [];
+    l.push("CENTRALUX CONTAGEM");
+    l.push("Data: " + data);
+    l.push("Responsavel: " + (elResp.value.trim() || "-"));
+    l.push("SKUs contados: " + itens.length + "   Total de unidades: " + total);
+    l.push("------------------------------");
+    itens.forEach(function (i) {
+      l.push(i.sku.padEnd(w, " ") + "  " + String(i.qtd).padStart(5, " "));
+    });
+    l.push("------------------------------");
+    l.push("TOTAL".padEnd(w, " ") + "  " + String(total).padStart(5, " "));
+    return l.join("\n");
+  }
+
+  function nomeArquivo() {
+    var d = new Date();
+    return "contagem-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+      "-" + pad(d.getHours()) + pad(d.getMinutes()) + ".txt";
+  }
+
+  /* ---------- render ---------- */
+
+  function render() {
+    var total = totalUnidades();
+    elTotSkus.textContent = itens.length;
+    elTotUnid.textContent = total;
+    elVazio.classList.toggle("hide", itens.length > 0);
+    elLimpar.classList.toggle("hide", itens.length === 0);
+    elPreviaSec.classList.toggle("hide", itens.length === 0);
+
+    var html = "";
+    for (var k = 0; k < itens.length; k++) {
+      var i = itens[k];
+      html += '<li>' +
+        '<div style="min-width:0;display:flex;flex-direction:column;gap:3px;">' +
+          '<span class="it-sku">' + esc(i.sku) + '</span>' +
+          '<span class="it-hora">' + (i.hora ? "contado às " + esc(i.hora) : "") + '</span>' +
+        '</div>' +
+        '<div class="it-ctrl">' +
+          '<button class="step" data-acao="menos" data-i="' + k + '">&minus;</button>' +
+          '<input type="number" inputmode="numeric" data-acao="qtd" data-i="' + k + '" value="' + i.qtd + '">' +
+          '<button class="step" data-acao="mais" data-i="' + k + '">+</button>' +
+          '<button class="del" data-acao="remover" data-i="' + k + '">&#10005;</button>' +
+        '</div>' +
+      '</li>';
+    }
+    elLista.innerHTML = html;
+
+    if (itens.length) elPrevia.textContent = txt();
+  }
+
+  elLista.addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-acao]");
+    if (!b) return;
+    var k = parseInt(b.getAttribute("data-i"), 10);
+    var acao = b.getAttribute("data-acao");
+    if (acao === "menos") itens[k].qtd = Math.max(0, itens[k].qtd - 1);
+    else if (acao === "mais") itens[k].qtd = itens[k].qtd + 1;
+    else if (acao === "remover") itens.splice(k, 1);
+    salvar(); render();
+  });
+
+  elLista.addEventListener("change", function (ev) {
+    var inp = ev.target;
+    if (!inp.matches('input[data-acao="qtd"]')) return;
+    var k = parseInt(inp.getAttribute("data-i"), 10);
+    var n = parseQtd(inp.value);
+    itens[k].qtd = n === null ? 0 : n;
+    salvar(); render();
+  });
+
+  /* ---------- adicionar ---------- */
+
+  function adicionar() {
+    var sku = elSku.value.trim().toUpperCase();
+    var bruto = elQtd.value.trim();
+    var q = bruto === "" ? 1 : parseQtd(bruto);
+    if (!sku) { erro("Digite o SKU."); elSku.focus(); return; }
+    if (q === null || q === 0) { erro("Quantidade inválida."); elQtd.focus(); return; }
+    erro("");
+
+    var existente = null;
+    for (var k = 0; k < itens.length; k++) if (itens[k].sku === sku) { existente = itens[k]; break; }
+
+    if (existente) {
+      dup = { sku: sku, atual: existente.qtd, add: q };
+      elDupTexto.textContent = sku + " já está na contagem com " + existente.qtd +
+        " unid. Você digitou " + q + ".";
+      elSomar.textContent = "Somar → " + (existente.qtd + q) + " unid.";
+      elSubstituir.textContent = "Substituir por " + q + " unid.";
+      elOverlay.classList.remove("hide");
       return;
     }
-    this.semCompartilhamento();
-  };
 
-  semCompartilhamento() {
-    this.baixarTxt();
-    window.open('https://web.whatsapp.com/', '_blank', 'noopener');
-    this.flash('Arquivo baixado — anexe na conversa do WhatsApp.');
+    itens.unshift({ sku: sku, qtd: q, hora: hora() });
+    elSku.value = ""; elQtd.value = "";
+    salvar(); render();
+    elSku.focus();
   }
 
-  itensView() {
-    const itens = this.state.itens;
-    if (this._iCache && this._iSrc === itens) return this._iCache;
-    this._iSrc = itens;
-    this._iCache = itens.map(i => ({
-      sku: i.sku,
-      qtd: i.qtd,
-      hora: i.hora ? 'contado às ' + i.hora : '',
-      menos: () => this.set({ itens: this.state.itens.map(x => x.sku === i.sku ? { ...x, qtd: Math.max(0, x.qtd - 1) } : x) }),
-      mais: () => this.set({ itens: this.state.itens.map(x => x.sku === i.sku ? { ...x, qtd: x.qtd + 1 } : x) }),
-      setQtd: e => {
-        const n = this.parseQtd(e.target.value);
-        this.set({ itens: this.state.itens.map(x => x.sku === i.sku ? { ...x, qtd: n === null ? 0 : n } : x) });
-      },
-      remover: () => this.set({ itens: this.state.itens.filter(x => x.sku !== i.sku) })
-    }));
-    return this._iCache;
+  function aplicarDup(novaQtd) {
+    for (var k = 0; k < itens.length; k++) {
+      if (itens[k].sku === dup.sku) { itens[k].qtd = novaQtd; itens[k].hora = hora(); break; }
+    }
+    dup = null;
+    elOverlay.classList.add("hide");
+    elSku.value = ""; elQtd.value = "";
+    salvar(); render();
+    elSku.focus();
   }
 
-  previaTxt() {
-    const itens = this.state.itens;
-    const stamp = itens + '|' + this.state.responsavel + '|' + this.props.formatoTxt;
-    if (this._pStamp === stamp) return this._pCache;
-    this._pStamp = stamp;
-    this._pCache = itens.length ? this.txt() : '';
-    return this._pCache;
+  $("btnAdd").addEventListener("click", adicionar);
+  elSku.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); elQtd.focus(); } });
+  elQtd.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); adicionar(); } });
+  elSku.addEventListener("input", function () { erro(""); });
+  elQtd.addEventListener("input", function () { erro(""); });
+  elResp.addEventListener("input", function () { salvar(); if (itens.length) elPrevia.textContent = txt(); });
+
+  elSomar.addEventListener("click", function () { aplicarDup(dup.atual + dup.add); });
+  elSubstituir.addEventListener("click", function () { aplicarDup(dup.add); });
+  $("btnCancelarDup").addEventListener("click", function () { dup = null; elOverlay.classList.add("hide"); });
+  elOverlay.addEventListener("click", function (e) {
+    if (e.target === elOverlay) { dup = null; elOverlay.classList.add("hide"); }
+  });
+
+  elLimpar.addEventListener("click", function () {
+    if (!itens.length) return;
+    if (!window.confirm("Apagar todos os SKUs contados?")) return;
+    itens = [];
+    salvar(); render();
+  });
+
+  /* ---------- baixar / copiar ---------- */
+
+  function baixar() {
+    var nome = nomeArquivo();
+    var blob = new Blob([txt()], { type: "text/plain;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = nome;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    return nome;
   }
 
-  renderVals() {
-    const itens = this.state.itens;
-    const total = itens.reduce((a, i) => a + i.qtd, 0);
-    const d = this.state.dup;
-    return {
-      dataHoje: new Date().toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }),
-      responsavel: this.state.responsavel,
-      setResponsavel: e => this.set({ responsavel: e.target.value }),
-      sku: this.state.sku,
-      qtd: this.state.qtd,
-      setSku: e => this.setState({ sku: e.target.value, erro: '' }),
-      setQtd: e => this.setState({ qtd: e.target.value, erro: '' }),
-      skuRef: this.skuRef,
-      qtdRef: this.qtdRef,
-      onKeySku: this.onKeySku,
-      onKeyQtd: this.onKeyQtd,
-      adicionar: this.adicionar,
-      erro: this.state.erro,
-      totalSkus: itens.length,
-      totalUnidades: total,
-      temItens: itens.length > 0,
-      vazio: itens.length === 0,
-      previa: this.previaTxt(),
-      limparTudo: () => { if (confirm('Apagar todos os SKUs contados?')) this.set({ itens: [] }); },
-      itens: this.itensView(),
-      baixarTxt: this.baixarTxt,
-      enviarWhats: this.enviarWhats,
-      pararClique: e => e.stopPropagation(),
-      dup: !!d,
-      dupTexto: d ? d.sku + ' já está na contagem com ' + d.atual + ' unid. Você digitou ' + d.add + '.' : '',
-      dupSomarLabel: d ? 'Somar → ' + (d.atual + d.add) + ' unid.' : '',
-      dupSubstituirLabel: d ? 'Substituir por ' + d.add + ' unid.' : '',
-      dupSomar: () => this.aplicar(d.sku, d.atual + d.add),
-      dupSubstituir: () => this.aplicar(d.sku, d.add),
-      fecharDup: () => this.setState({ dup: null }),
-      toast: this.state.toast
-    };
+  $("btnBaixar").addEventListener("click", function () {
+    if (!itens.length) { flash("Nenhum SKU contado."); return; }
+    flash("Arquivo " + baixar() + " baixado.");
+  });
+
+  function copiar(texto) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(texto);
+    }
+    return new Promise(function (ok, falha) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = texto;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed"; ta.style.top = "-1000px";
+        document.body.appendChild(ta);
+        ta.select(); ta.setSelectionRange(0, texto.length);
+        var certo = document.execCommand("copy");
+        document.body.removeChild(ta);
+        certo ? ok() : falha();
+      } catch (e) { falha(e); }
+    });
   }
-}
+
+  $("btnCopiar").addEventListener("click", function () {
+    copiar(txt()).then(function () { flash("Relatório copiado."); },
+                       function () { flash("Não foi possível copiar."); });
+  });
+
+  /* ---------- envio para o WhatsApp ---------- */
+
+  function abrirAppWhats() {
+    var ua = navigator.userAgent || "";
+    if (/android/i.test(ua)) {
+      window.location.href = "intent://send/#Intent;scheme=whatsapp;package=com.whatsapp;end";
+    } else {
+      window.location.href = "whatsapp://send";
+    }
+  }
+
+  // Passo 3: copia o relatório e abre o WhatsApp para colar
+  function copiarEAbrir(texto) {
+    copiar(texto).then(function () {
+      flash("✅ Relatório copiado! No WhatsApp, segure o campo de mensagem e toque em COLAR.", 8000);
+      abrirAppWhats();
+    }).catch(function () {
+      flash("Não consegui copiar. Use o botão Copiar, acima da prévia.", 6000);
+    });
+  }
+
+  // Passo 2: compartilha como texto simples
+  function compartilharTexto(texto) {
+    if (navigator.share) {
+      navigator.share({ text: texto }).catch(function (err) {
+        if (err && err.name === "AbortError") return;
+        copiarEAbrir(texto);
+      });
+      return;
+    }
+    copiarEAbrir(texto);
+  }
+
+  $("btnWhats").addEventListener("click", function () {
+    if (!itens.length) { flash("Conte algum SKU primeiro."); return; }
+    var texto = txt();
+
+    // Passo 1: compartilha o relatório como ARQUIVO .txt anexado.
+    // O arquivo nunca é cortado, não importa a quantidade de SKUs.
+    try {
+      var arquivo = new File([texto], nomeArquivo(), { type: "text/plain" });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+        navigator.share({
+          files: [arquivo],
+          title: "CENTRALUX CONTAGEM"
+        }).then(function () {
+          flash("✅ Contagem com " + itens.length + " SKUs enviada.");
+        }).catch(function (err) {
+          if (err && err.name === "AbortError") return;
+          compartilharTexto(texto);
+        });
+        return;
+      }
+    } catch (e) { /* File/canShare indisponível -> fallback */ }
+
+    compartilharTexto(texto);
+  });
+
+  /* ---------- início ---------- */
+
+  $("dataHoje").textContent = new Date().toLocaleDateString("pt-BR", {
+    weekday: "short", day: "2-digit", month: "short"
+  });
+  carregar();
+  render();
+})();
 </script>
 </body>
 </html>
