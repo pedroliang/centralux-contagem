@@ -34,7 +34,6 @@
         <div style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">CENTRALUX <span style="color: var(--color-accent-300); font-weight: 500;">CONTAGEM</span></div>
         <div style="font-size: 12px; color: var(--color-neutral-500);">{{ dataHoje }}</div>
       </div>
-      <button onClick="{{ abrirGrupos }}" style="display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--color-neutral-800); color: var(--color-neutral-400); border-radius: var(--radius-md); padding: 8px 10px; font-size: 12px; cursor: pointer;" style-hover="background: var(--color-neutral-900); color: var(--color-neutral-200);">Grupos</button>
     </header>
 
     <div style="display: flex; align-items: center; gap: 8px; padding: 0 0 14px;">
@@ -101,7 +100,7 @@
   <div style="position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--color-bg) 88%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--color-neutral-900); padding: 12px 16px calc(12px + env(safe-area-inset-bottom));">
     <div style="max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px;">
       <button onClick="{{ baixarTxt }}" style="height: 50px; background: transparent; border: 1px solid var(--color-neutral-700); color: var(--color-neutral-200); border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: var(--color-neutral-900); border-color: var(--color-neutral-600);">Baixar .txt</button>
-      <button onClick="{{ abrirEnvio }}" style="height: 50px; background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid #4fd18b; color: #8ee6b5; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" style-hover="background: color-mix(in srgb, #4fd18b 22%, transparent); color: #d6f7e5;">Enviar no WhatsApp</button>
+      <button onClick="{{ enviarWhats }}" style="height: 50px; background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid #4fd18b; color: #8ee6b5; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" style-hover="background: color-mix(in srgb, #4fd18b 22%, transparent); color: #d6f7e5;">Enviar no WhatsApp</button>
     </div>
   </div>
 
@@ -120,45 +119,6 @@
     </div>
   </sc-if>
 
-  <sc-if value="{{ envio }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ fecharEnvio }}" style="position: fixed; inset: 0; background: rgba(10,11,18,0.72); display: flex; align-items: flex-end; justify-content: center; z-index: 40;">
-      <div onClick="{{ pararClique }}" style="width: 100%; max-width: 520px; background: var(--color-surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; box-shadow: var(--shadow-lg); padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); max-height: 84vh; overflow-y: auto;">
-        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-          <div style="font-size: 17px; font-weight: 500;">Enviar para qual grupo?</div>
-          <button onClick="{{ fecharEnvio }}" style="background: transparent; border: none; color: var(--color-neutral-600); font-size: 16px; cursor: pointer;" style-hover="color: var(--color-neutral-300);">✕</button>
-        </div>
-        <div style="font-size: 12.5px; color: var(--color-neutral-500); line-height: 1.5; margin-bottom: 16px;">O arquivo .txt é baixado e o WhatsApp abre no grupo escolhido — aí só anexar o arquivo na conversa.</div>
-
-        <ul style="list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px;">
-          <sc-for list="{{ grupos }}" as="g" hint-placeholder-count="2">
-            <li style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; background: var(--color-bg); border: 1px solid var(--color-neutral-900); border-radius: var(--radius-md); padding: 8px 8px 8px 14px;">
-              <button onClick="{{ g.enviar }}" style="text-align: left; background: transparent; border: none; color: var(--color-text); padding: 8px 0; cursor: pointer; min-width: 0;" style-hover="color: #8ee6b5;">
-                <div style="font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ g.nome }}</div>
-                <div style="font-size: 11px; color: var(--color-neutral-600); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ g.destinoCurto }}</div>
-              </button>
-              <div style="display: flex; gap: 4px;">
-                <button onClick="{{ g.copiar }}" title="Copiar texto do relatório" style="height: 40px; padding: 0 12px; background: transparent; border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-neutral-300); font-size: 12px; cursor: pointer;" style-hover="background: var(--color-neutral-900);">Copiar</button>
-                <button onClick="{{ g.remover }}" style="width: 36px; height: 40px; background: transparent; border: none; color: var(--color-neutral-700); font-size: 14px; cursor: pointer;" style-hover="color: #f0a24a;">✕</button>
-              </div>
-            </li>
-          </sc-for>
-        </ul>
-
-        <div style="border-top: 1px solid var(--color-neutral-900); padding-top: 14px;">
-          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500); margin-bottom: 8px;">Adicionar grupo</div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <input value="{{ novoNome }}" onChange="{{ setNovoNome }}" placeholder="Nome do grupo — ex. Estoque Loja 1" style="height: 46px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 14px; padding: 0 12px;">
-            <input value="{{ novoLink }}" onChange="{{ setNovoLink }}" placeholder="Link do grupo ou telefone (55119...)" style="height: 46px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 14px; padding: 0 12px;">
-            <button onClick="{{ addGrupo }}" style="height: 46px; background: transparent; border: 1px solid var(--color-accent); color: var(--color-accent-200); border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: color-mix(in srgb, var(--color-accent) 14%, transparent);">Salvar grupo</button>
-            <sc-if value="{{ erroGrupo }}" hint-placeholder-val="{{ false }}">
-              <div style="font-size: 12px; color: #f0a24a;">{{ erroGrupo }}</div>
-            </sc-if>
-          </div>
-        </div>
-      </div>
-    </div>
-  </sc-if>
-
   <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
     <div style="position: fixed; left: 50%; transform: translateX(-50%); bottom: 92px; z-index: 60; background: var(--color-neutral-900); border: 1px solid var(--color-neutral-800); color: var(--color-neutral-200); border-radius: var(--radius-md); padding: 10px 16px; font-size: 13px; box-shadow: var(--shadow-md);">{{ toast }}</div>
   </sc-if>
@@ -169,9 +129,8 @@ const KEY = 'centralux-contagem-v1';
 
 class Component extends DCLogic {
   state = {
-    responsavel: '', sku: '', qtd: '', itens: [], grupos: [],
-    erro: '', erroGrupo: '', toast: '', dup: null, envio: false,
-    novoNome: '', novoLink: ''
+    responsavel: '', sku: '', qtd: '', itens: [],
+    erro: '', toast: '', dup: null
   };
 
   skuRef = React.createRef();
@@ -184,8 +143,7 @@ class Component extends DCLogic {
         const d = JSON.parse(raw);
         this.setState({
           responsavel: d.responsavel || '',
-          itens: Array.isArray(d.itens) ? d.itens : [],
-          grupos: Array.isArray(d.grupos) ? d.grupos : []
+          itens: Array.isArray(d.itens) ? d.itens : []
         });
       }
     } catch (e) {}
@@ -194,7 +152,7 @@ class Component extends DCLogic {
   save(next) {
     const s = { ...this.state, ...next };
     try {
-      localStorage.setItem(KEY, JSON.stringify({ responsavel: s.responsavel, itens: s.itens, grupos: s.grupos }));
+      localStorage.setItem(KEY, JSON.stringify({ responsavel: s.responsavel, itens: s.itens }));
     } catch (e) {}
   }
 
@@ -286,34 +244,28 @@ class Component extends DCLogic {
     this.flash('Arquivo ' + this.nomeArquivo() + ' baixado.');
   };
 
-  linkGrupo(destino) {
-    const d = String(destino).trim();
-    if (/^https?:\/\//i.test(d)) return d;
-    const tel = d.replace(/[^0-9]/g, '');
-    if (tel) return 'https://wa.me/' + tel;
-    return 'https://web.whatsapp.com/';
-  }
+  enviarWhats = () => {
+    const itens = this.state.itens;
+    if (!itens.length) { this.flash('Conte algum SKU primeiro.'); return; }
+    const nome = this.nomeArquivo();
+    let arquivo = null;
+    try {
+      arquivo = new File([this.txt()], nome, { type: 'text/plain' });
+    } catch (e) {}
+    if (arquivo && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+      navigator.share({ files: [arquivo], title: 'CENTRALUX CONTAGEM' })
+        .then(() => this.flash('Contagem enviada.'))
+        .catch(err => { if (!err || err.name !== 'AbortError') this.semCompartilhamento(); });
+      return;
+    }
+    this.semCompartilhamento();
+  };
 
-  enviarPara(g) {
+  semCompartilhamento() {
     this.baixarTxt();
-    window.open(this.linkGrupo(g.destino), '_blank', 'noopener');
-    this.setState({ envio: false });
+    window.open('https://web.whatsapp.com/', '_blank', 'noopener');
+    this.flash('Arquivo baixado — anexe na conversa do WhatsApp.');
   }
-
-  copiarTexto = () => {
-    const t = this.txt();
-    if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => this.flash('Relatório copiado.'), () => this.flash('Não foi possível copiar.'));
-    else this.flash('Não foi possível copiar.');
-  };
-
-  addGrupo = () => {
-    const nome = this.state.novoNome.trim();
-    const destino = this.state.novoLink.trim();
-    if (!nome) { this.setState({ erroGrupo: 'Dê um nome ao grupo.' }); return; }
-    if (!destino) { this.setState({ erroGrupo: 'Cole o link do grupo ou um telefone.' }); return; }
-    const grupos = [...this.state.grupos, { id: Date.now(), nome, destino }];
-    this.set({ grupos, novoNome: '', novoLink: '', erroGrupo: '' });
-  };
 
   itensView() {
     const itens = this.state.itens;
@@ -332,20 +284,6 @@ class Component extends DCLogic {
       remover: () => this.set({ itens: this.state.itens.filter(x => x.sku !== i.sku) })
     }));
     return this._iCache;
-  }
-
-  gruposView() {
-    const grupos = this.state.grupos;
-    if (this._gCache && this._gSrc === grupos) return this._gCache;
-    this._gSrc = grupos;
-    this._gCache = grupos.map(g => ({
-      nome: g.nome,
-      destinoCurto: /^https?:/i.test(g.destino) ? g.destino.replace(/^https?:\/\//, '').slice(0, 38) : '+' + g.destino.replace(/[^0-9]/g, ''),
-      enviar: () => this.enviarPara(g),
-      copiar: this.copiarTexto,
-      remover: () => this.set({ grupos: this.state.grupos.filter(x => x.id !== g.id) })
-    }));
-    return this._gCache;
   }
 
   previaTxt() {
@@ -383,18 +321,8 @@ class Component extends DCLogic {
       limparTudo: () => { if (confirm('Apagar todos os SKUs contados?')) this.set({ itens: [] }); },
       itens: this.itensView(),
       baixarTxt: this.baixarTxt,
-      abrirEnvio: () => { if (!itens.length) { this.flash('Conte algum SKU primeiro.'); return; } this.setState({ envio: true }); },
-      fecharEnvio: () => this.setState({ envio: false, erroGrupo: '' }),
-      abrirGrupos: () => this.setState({ envio: true }),
-      envio: this.state.envio,
+      enviarWhats: this.enviarWhats,
       pararClique: e => e.stopPropagation(),
-      grupos: this.gruposView(),
-      novoNome: this.state.novoNome,
-      novoLink: this.state.novoLink,
-      setNovoNome: e => this.setState({ novoNome: e.target.value, erroGrupo: '' }),
-      setNovoLink: e => this.setState({ novoLink: e.target.value, erroGrupo: '' }),
-      addGrupo: this.addGrupo,
-      erroGrupo: this.state.erroGrupo,
       dup: !!d,
       dupTexto: d ? d.sku + ' já está na contagem com ' + d.atual + ' unid. Você digitou ' + d.add + '.' : '',
       dupSomarLabel: d ? 'Somar → ' + (d.atual + d.add) + ' unid.' : '',

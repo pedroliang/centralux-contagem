@@ -10,8 +10,8 @@ App web de contagem de estoque por SKU. Funciona direto no navegador (desktop e 
 - Detecção de SKU duplicado com opção de somar ou substituir
 - Totais de SKUs e unidades em tempo real
 - Nome do responsável e data da contagem
-- Prévia do texto da contagem, cópia e download em `.txt`
-- Grupos de destino salvos (WhatsApp ou link) para envio rápido
+- Prévia do relatório e download em `.txt`
+- Botão **Enviar no WhatsApp**: abre o compartilhamento do celular com o `.txt` já anexado (no desktop, baixa o arquivo e abre o WhatsApp Web)
 - Dados mantidos no navegador (localStorage) entre sessões
 
 ## Uso local
