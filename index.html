@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CENTRALUX CONTAGEM</title>
+<meta name="description" content="Contagem de estoque por SKU - CENTRALUX">
+<meta name="theme-color" content="#12141f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%2312141f%22/><text x=%2216%22 y=%2222%22 font-size=%2217%22 font-family=%22sans-serif%22 font-weight=%22600%22 fill=%22%237c9cff%22 text-anchor=%22middle%22>C</text></svg>">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); -webkit-text-size-adjust: 100%; }
+  * { box-sizing: border-box; }
+  a { color: var(--color-accent-300); text-decoration: none; }
+  a:hover { color: var(--color-accent-200); }
+  input { font-family: inherit; }
+  input:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  input[type=number]::-webkit-inner-spin-button { display: none; }
+</style>
+</helmet>
+<div style="min-height: 100vh; background: radial-gradient(120% 60% at 50% 0%, #1d2033 0%, var(--color-bg) 60%); padding-bottom: 96px;">
+  <div style="max-width: 520px; margin: 0 auto; padding: 0 16px;">
+
+    <header style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 20px 0 14px;">
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">CENTRALUX <span style="color: var(--color-accent-300); font-weight: 500;">CONTAGEM</span></div>
+        <div style="font-size: 12px; color: var(--color-neutral-500);">{{ dataHoje }}</div>
+      </div>
+      <button onClick="{{ abrirGrupos }}" style="display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--color-neutral-800); color: var(--color-neutral-400); border-radius: var(--radius-md); padding: 8px 10px; font-size: 12px; cursor: pointer;" style-hover="background: var(--color-neutral-900); color: var(--color-neutral-200);">Grupos</button>
+    </header>
+
+    <div style="display: flex; align-items: center; gap: 8px; padding: 0 0 14px;">
+      <span style="font-size: 12px; color: var(--color-neutral-500); white-space: nowrap;">Responsável</span>
+      <input value="{{ responsavel }}" onChange="{{ setResponsavel }}" placeholder="seu nome" style="flex: 1; min-width: 0; background: transparent; border: none; border-bottom: 1px solid var(--color-neutral-800); color: var(--color-text); font-size: 14px; padding: 6px 2px;">
+    </div>
+
+    <section style="background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: grid; grid-template-columns: 1fr 104px; gap: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500);">SKU</label>
+          <input ref="{{ skuRef }}" value="{{ sku }}" onChange="{{ setSku }}" onKeyDown="{{ onKeySku }}" placeholder="ex. 7891234" autoCapitalize="characters" autoComplete="off" style="height: 52px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 18px; padding: 0 12px; width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500);">Qtd</label>
+          <input ref="{{ qtdRef }}" value="{{ qtd }}" onChange="{{ setQtd }}" onKeyDown="{{ onKeyQtd }}" type="number" inputMode="numeric" placeholder="1" style="height: 52px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 18px; padding: 0 12px; width: 100%; text-align: center;">
+        </div>
+      </div>
+      <button onClick="{{ adicionar }}" style="height: 52px; background: transparent; border: 1px solid var(--color-accent); color: var(--color-accent-200); border-radius: var(--radius-md); font-size: 15px; font-weight: 500; letter-spacing: 0.02em; cursor: pointer;" style-hover="background: color-mix(in srgb, var(--color-accent) 14%, transparent);" style-active="border-color: var(--color-accent-400); color: var(--color-accent-100);">Adicionar à contagem</button>
+      <sc-if value="{{ erro }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 12px; color: #f0a24a;">{{ erro }}</div>
+      </sc-if>
+    </section>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 2px 10px;">
+      <div style="display: flex; gap: 18px; align-items: baseline;">
+        <div><span style="font-size: 20px; font-weight: 600;">{{ totalSkus }}</span><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: 5px; text-transform: uppercase; letter-spacing: 0.08em;">SKUs</span></div>
+        <div><span style="font-size: 20px; font-weight: 600; color: #4fd18b;">{{ totalUnidades }}</span><span style="font-size: 11px; color: var(--color-neutral-500); margin-left: 5px; text-transform: uppercase; letter-spacing: 0.08em;">unid.</span></div>
+      </div>
+      <sc-if value="{{ temItens }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ limparTudo }}" style="background: transparent; border: none; color: var(--color-neutral-600); font-size: 12px; cursor: pointer; padding: 4px;" style-hover="color: #f0a24a;">Limpar tudo</button>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ vazio }}" hint-placeholder-val="{{ false }}">
+      <div style="border: 1px dashed var(--color-neutral-800); border-radius: var(--radius-lg); padding: 30px 18px; text-align: center; color: var(--color-neutral-600); font-size: 13px;">Nenhum SKU contado ainda.<br>Digite o código e a quantidade acima.</div>
+    </sc-if>
+
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+      <sc-for list="{{ itens }}" as="item" hint-placeholder-count="3">
+        <li style="background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 10px 10px 10px 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;">
+          <div style="min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+            <span style="font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ item.sku }}</span>
+            <span style="font-size: 11px; color: var(--color-neutral-600);">{{ item.hora }}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button onClick="{{ item.menos }}" style="width: 44px; height: 44px; flex: none; background: transparent; border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-neutral-300); font-size: 20px; line-height: 1; cursor: pointer;" style-hover="background: var(--color-neutral-900); border-color: var(--color-neutral-700);">−</button>
+            <input value="{{ item.qtd }}" onChange="{{ item.setQtd }}" type="number" inputMode="numeric" style="width: 62px; height: 44px; text-align: center; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 17px; font-variant-numeric: tabular-nums;">
+            <button onClick="{{ item.mais }}" style="width: 44px; height: 44px; flex: none; background: transparent; border: 1px solid color-mix(in srgb, #4fd18b 45%, transparent); border-radius: var(--radius-md); color: #4fd18b; font-size: 20px; line-height: 1; cursor: pointer;" style-hover="background: color-mix(in srgb, #4fd18b 14%, transparent);">+</button>
+            <button onClick="{{ item.remover }}" style="width: 36px; height: 44px; flex: none; background: transparent; border: none; color: var(--color-neutral-700); font-size: 16px; cursor: pointer;" style-hover="color: #f0a24a;">✕</button>
+          </div>
+        </li>
+      </sc-for>
+    </ul>
+
+    <sc-if value="{{ temItens }}" hint-placeholder-val="{{ false }}">
+      <section style="margin-top: 24px; border-top: 1px solid var(--color-neutral-900); padding-top: 16px;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500); margin-bottom: 8px;">Prévia do relatório</div>
+        <pre style="margin: 0; background: var(--color-bg); border: 1px solid var(--color-neutral-900); border-radius: var(--radius-md); padding: 12px; font-size: 11.5px; line-height: 1.6; color: var(--color-neutral-400); overflow-x: auto; white-space: pre; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">{{ previa }}</pre>
+      </section>
+    </sc-if>
+  </div>
+
+  <div style="position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--color-bg) 88%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--color-neutral-900); padding: 12px 16px calc(12px + env(safe-area-inset-bottom));">
+    <div style="max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px;">
+      <button onClick="{{ baixarTxt }}" style="height: 50px; background: transparent; border: 1px solid var(--color-neutral-700); color: var(--color-neutral-200); border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: var(--color-neutral-900); border-color: var(--color-neutral-600);">Baixar .txt</button>
+      <button onClick="{{ abrirEnvio }}" style="height: 50px; background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid #4fd18b; color: #8ee6b5; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" style-hover="background: color-mix(in srgb, #4fd18b 22%, transparent); color: #d6f7e5;">Enviar no WhatsApp</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ dup }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ fecharDup }}" style="position: fixed; inset: 0; background: rgba(10,11,18,0.72); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 40;">
+      <div onClick="{{ pararClique }}" style="width: 100%; max-width: 400px; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 20px;">
+        <div style="width: 34px; height: 2px; background: #f0a24a; margin-bottom: 14px;"></div>
+        <div style="font-size: 17px; font-weight: 500; margin-bottom: 6px;">SKU já contado</div>
+        <div style="font-size: 13.5px; color: var(--color-neutral-400); line-height: 1.55;">{{ dupTexto }}</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px;">
+          <button onClick="{{ dupSomar }}" style="height: 48px; background: color-mix(in srgb, #4fd18b 12%, transparent); border: 1px solid #4fd18b; color: #8ee6b5; border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: color-mix(in srgb, #4fd18b 22%, transparent);">{{ dupSomarLabel }}</button>
+          <button onClick="{{ dupSubstituir }}" style="height: 48px; background: transparent; border: 1px solid var(--color-neutral-700); color: var(--color-neutral-200); border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: var(--color-neutral-900);">{{ dupSubstituirLabel }}</button>
+          <button onClick="{{ fecharDup }}" style="height: 40px; background: transparent; border: none; color: var(--color-neutral-500); font-size: 13px; cursor: pointer;" style-hover="color: var(--color-neutral-300);">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ envio }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ fecharEnvio }}" style="position: fixed; inset: 0; background: rgba(10,11,18,0.72); display: flex; align-items: flex-end; justify-content: center; z-index: 40;">
+      <div onClick="{{ pararClique }}" style="width: 100%; max-width: 520px; background: var(--color-surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; box-shadow: var(--shadow-lg); padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); max-height: 84vh; overflow-y: auto;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
+          <div style="font-size: 17px; font-weight: 500;">Enviar para qual grupo?</div>
+          <button onClick="{{ fecharEnvio }}" style="background: transparent; border: none; color: var(--color-neutral-600); font-size: 16px; cursor: pointer;" style-hover="color: var(--color-neutral-300);">✕</button>
+        </div>
+        <div style="font-size: 12.5px; color: var(--color-neutral-500); line-height: 1.5; margin-bottom: 16px;">O arquivo .txt é baixado e o WhatsApp abre no grupo escolhido — aí só anexar o arquivo na conversa.</div>
+
+        <ul style="list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+          <sc-for list="{{ grupos }}" as="g" hint-placeholder-count="2">
+            <li style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; background: var(--color-bg); border: 1px solid var(--color-neutral-900); border-radius: var(--radius-md); padding: 8px 8px 8px 14px;">
+              <button onClick="{{ g.enviar }}" style="text-align: left; background: transparent; border: none; color: var(--color-text); padding: 8px 0; cursor: pointer; min-width: 0;" style-hover="color: #8ee6b5;">
+                <div style="font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ g.nome }}</div>
+                <div style="font-size: 11px; color: var(--color-neutral-600); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ g.destinoCurto }}</div>
+              </button>
+              <div style="display: flex; gap: 4px;">
+                <button onClick="{{ g.copiar }}" title="Copiar texto do relatório" style="height: 40px; padding: 0 12px; background: transparent; border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-neutral-300); font-size: 12px; cursor: pointer;" style-hover="background: var(--color-neutral-900);">Copiar</button>
+                <button onClick="{{ g.remover }}" style="width: 36px; height: 40px; background: transparent; border: none; color: var(--color-neutral-700); font-size: 14px; cursor: pointer;" style-hover="color: #f0a24a;">✕</button>
+              </div>
+            </li>
+          </sc-for>
+        </ul>
+
+        <div style="border-top: 1px solid var(--color-neutral-900); padding-top: 14px;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-neutral-500); margin-bottom: 8px;">Adicionar grupo</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <input value="{{ novoNome }}" onChange="{{ setNovoNome }}" placeholder="Nome do grupo — ex. Estoque Loja 1" style="height: 46px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 14px; padding: 0 12px;">
+            <input value="{{ novoLink }}" onChange="{{ setNovoLink }}" placeholder="Link do grupo ou telefone (55119...)" style="height: 46px; background: var(--color-bg); border: 1px solid var(--color-neutral-800); border-radius: var(--radius-md); color: var(--color-text); font-size: 14px; padding: 0 12px;">
+            <button onClick="{{ addGrupo }}" style="height: 46px; background: transparent; border: 1px solid var(--color-accent); color: var(--color-accent-200); border-radius: var(--radius-md); font-size: 14px; cursor: pointer;" style-hover="background: color-mix(in srgb, var(--color-accent) 14%, transparent);">Salvar grupo</button>
+            <sc-if value="{{ erroGrupo }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 12px; color: #f0a24a;">{{ erroGrupo }}</div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; left: 50%; transform: translateX(-50%); bottom: 92px; z-index: 60; background: var(--color-neutral-900); border: 1px solid var(--color-neutral-800); color: var(--color-neutral-200); border-radius: var(--radius-md); padding: 10px 16px; font-size: 13px; box-shadow: var(--shadow-md);">{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autoSomar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Comportamento&quot;},&quot;formatoTxt&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;detalhado&quot;,&quot;csv&quot;],&quot;default&quot;:&quot;detalhado&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Relatório&quot;}}">
+const KEY = 'centralux-contagem-v1';
+
+class Component extends DCLogic {
+  state = {
+    responsavel: '', sku: '', qtd: '', itens: [], grupos: [],
+    erro: '', erroGrupo: '', toast: '', dup: null, envio: false,
+    novoNome: '', novoLink: ''
+  };
+
+  skuRef = React.createRef();
+  qtdRef = React.createRef();
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        this.setState({
+          responsavel: d.responsavel || '',
+          itens: Array.isArray(d.itens) ? d.itens : [],
+          grupos: Array.isArray(d.grupos) ? d.grupos : []
+        });
+      }
+    } catch (e) {}
+  }
+
+  save(next) {
+    const s = { ...this.state, ...next };
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ responsavel: s.responsavel, itens: s.itens, grupos: s.grupos }));
+    } catch (e) {}
+  }
+
+  set(next) { this.setState(next); this.save(next); }
+
+  flash(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: '' }), 2600);
+  }
+
+  hora() {
+    return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  parseQtd(v) {
+    const n = parseInt(String(v).replace(/[^0-9-]/g, ''), 10);
+    return isNaN(n) ? null : n;
+  }
+
+  adicionar = () => {
+    const sku = this.state.sku.trim().toUpperCase();
+    const q = this.state.qtd.trim() === '' ? 1 : this.parseQtd(this.state.qtd);
+    if (!sku) { this.setState({ erro: 'Digite o SKU.' }); return; }
+    if (q === null || q === 0) { this.setState({ erro: 'Quantidade inválida.' }); return; }
+    const existente = this.state.itens.find(i => i.sku === sku);
+    if (existente) {
+      if (this.props.autoSomar) {
+        this.aplicar(sku, existente.qtd + q);
+        this.flash(sku + ' somado — agora ' + (existente.qtd + q));
+      } else {
+        this.setState({ dup: { sku, atual: existente.qtd, add: q }, erro: '' });
+      }
+      return;
+    }
+    const itens = [{ sku, qtd: q, hora: this.hora() }, ...this.state.itens];
+    this.set({ itens, sku: '', qtd: '', erro: '' });
+    if (this.skuRef.current) this.skuRef.current.focus();
+  };
+
+  aplicar(sku, novaQtd) {
+    const itens = this.state.itens.map(i => i.sku === sku ? { ...i, qtd: novaQtd, hora: this.hora() } : i);
+    this.set({ itens, sku: '', qtd: '', dup: null, erro: '' });
+    if (this.skuRef.current) this.skuRef.current.focus();
+  }
+
+  onKeySku = (e) => { if (e.key === 'Enter' && this.qtdRef.current) this.qtdRef.current.focus(); };
+  onKeyQtd = (e) => { if (e.key === 'Enter') this.adicionar(); };
+
+  txt() {
+    const it = this.state.itens;
+    const total = it.reduce((a, i) => a + i.qtd, 0);
+    const agora = new Date();
+    const data = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const linhas = [];
+    linhas.push('CENTRALUX CONTAGEM');
+    linhas.push('Data: ' + data);
+    linhas.push('Responsavel: ' + (this.state.responsavel.trim() || '-'));
+    linhas.push('SKUs contados: ' + it.length + '   Total de unidades: ' + total);
+    linhas.push('------------------------------');
+    if (this.props.formatoTxt === 'csv') {
+      linhas.push('SKU;QTD');
+      it.forEach(i => linhas.push(i.sku + ';' + i.qtd));
+    } else {
+      const w = Math.max(12, ...it.map(i => i.sku.length));
+      it.forEach(i => linhas.push(i.sku.padEnd(w, ' ') + '  ' + String(i.qtd).padStart(5, ' ')));
+      linhas.push('------------------------------');
+      linhas.push('TOTAL'.padEnd(w, ' ') + '  ' + String(total).padStart(5, ' '));
+    }
+    return linhas.join('\n');
+  }
+
+  nomeArquivo() {
+    const d = new Date();
+    const p = n => String(n).padStart(2, '0');
+    return 'contagem-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '.txt';
+  }
+
+  baixarTxt = () => {
+    if (!this.state.itens.length) { this.flash('Nenhum SKU contado.'); return; }
+    const blob = new Blob([this.txt()], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = this.nomeArquivo();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    this.flash('Arquivo ' + this.nomeArquivo() + ' baixado.');
+  };
+
+  linkGrupo(destino) {
+    const d = String(destino).trim();
+    if (/^https?:\/\//i.test(d)) return d;
+    const tel = d.replace(/[^0-9]/g, '');
+    if (tel) return 'https://wa.me/' + tel;
+    return 'https://web.whatsapp.com/';
+  }
+
+  enviarPara(g) {
+    this.baixarTxt();
+    window.open(this.linkGrupo(g.destino), '_blank', 'noopener');
+    this.setState({ envio: false });
+  }
+
+  copiarTexto = () => {
+    const t = this.txt();
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => this.flash('Relatório copiado.'), () => this.flash('Não foi possível copiar.'));
+    else this.flash('Não foi possível copiar.');
+  };
+
+  addGrupo = () => {
+    const nome = this.state.novoNome.trim();
+    const destino = this.state.novoLink.trim();
+    if (!nome) { this.setState({ erroGrupo: 'Dê um nome ao grupo.' }); return; }
+    if (!destino) { this.setState({ erroGrupo: 'Cole o link do grupo ou um telefone.' }); return; }
+    const grupos = [...this.state.grupos, { id: Date.now(), nome, destino }];
+    this.set({ grupos, novoNome: '', novoLink: '', erroGrupo: '' });
+  };
+
+  itensView() {
+    const itens = this.state.itens;
+    if (this._iCache && this._iSrc === itens) return this._iCache;
+    this._iSrc = itens;
+    this._iCache = itens.map(i => ({
+      sku: i.sku,
+      qtd: i.qtd,
+      hora: i.hora ? 'contado às ' + i.hora : '',
+      menos: () => this.set({ itens: this.state.itens.map(x => x.sku === i.sku ? { ...x, qtd: Math.max(0, x.qtd - 1) } : x) }),
+      mais: () => this.set({ itens: this.state.itens.map(x => x.sku === i.sku ? { ...x, qtd: x.qtd + 1 } : x) }),
+      setQtd: e => {
+        const n = this.parseQtd(e.target.value);
+        this.set({ itens: this.state.itens.map(x => x.sku === i.sku ? { ...x, qtd: n === null ? 0 : n } : x) });
+      },
+      remover: () => this.set({ itens: this.state.itens.filter(x => x.sku !== i.sku) })
+    }));
+    return this._iCache;
+  }
+
+  gruposView() {
+    const grupos = this.state.grupos;
+    if (this._gCache && this._gSrc === grupos) return this._gCache;
+    this._gSrc = grupos;
+    this._gCache = grupos.map(g => ({
+      nome: g.nome,
+      destinoCurto: /^https?:/i.test(g.destino) ? g.destino.replace(/^https?:\/\//, '').slice(0, 38) : '+' + g.destino.replace(/[^0-9]/g, ''),
+      enviar: () => this.enviarPara(g),
+      copiar: this.copiarTexto,
+      remover: () => this.set({ grupos: this.state.grupos.filter(x => x.id !== g.id) })
+    }));
+    return this._gCache;
+  }
+
+  previaTxt() {
+    const itens = this.state.itens;
+    const stamp = itens + '|' + this.state.responsavel + '|' + this.props.formatoTxt;
+    if (this._pStamp === stamp) return this._pCache;
+    this._pStamp = stamp;
+    this._pCache = itens.length ? this.txt() : '';
+    return this._pCache;
+  }
+
+  renderVals() {
+    const itens = this.state.itens;
+    const total = itens.reduce((a, i) => a + i.qtd, 0);
+    const d = this.state.dup;
+    return {
+      dataHoje: new Date().toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }),
+      responsavel: this.state.responsavel,
+      setResponsavel: e => this.set({ responsavel: e.target.value }),
+      sku: this.state.sku,
+      qtd: this.state.qtd,
+      setSku: e => this.setState({ sku: e.target.value, erro: '' }),
+      setQtd: e => this.setState({ qtd: e.target.value, erro: '' }),
+      skuRef: this.skuRef,
+      qtdRef: this.qtdRef,
+      onKeySku: this.onKeySku,
+      onKeyQtd: this.onKeyQtd,
+      adicionar: this.adicionar,
+      erro: this.state.erro,
+      totalSkus: itens.length,
+      totalUnidades: total,
+      temItens: itens.length > 0,
+      vazio: itens.length === 0,
+      previa: this.previaTxt(),
+      limparTudo: () => { if (confirm('Apagar todos os SKUs contados?')) this.set({ itens: [] }); },
+      itens: this.itensView(),
+      baixarTxt: this.baixarTxt,
+      abrirEnvio: () => { if (!itens.length) { this.flash('Conte algum SKU primeiro.'); return; } this.setState({ envio: true }); },
+      fecharEnvio: () => this.setState({ envio: false, erroGrupo: '' }),
+      abrirGrupos: () => this.setState({ envio: true }),
+      envio: this.state.envio,
+      pararClique: e => e.stopPropagation(),
+      grupos: this.gruposView(),
+      novoNome: this.state.novoNome,
+      novoLink: this.state.novoLink,
+      setNovoNome: e => this.setState({ novoNome: e.target.value, erroGrupo: '' }),
+      setNovoLink: e => this.setState({ novoLink: e.target.value, erroGrupo: '' }),
+      addGrupo: this.addGrupo,
+      erroGrupo: this.state.erroGrupo,
+      dup: !!d,
+      dupTexto: d ? d.sku + ' já está na contagem com ' + d.atual + ' unid. Você digitou ' + d.add + '.' : '',
+      dupSomarLabel: d ? 'Somar → ' + (d.atual + d.add) + ' unid.' : '',
+      dupSubstituirLabel: d ? 'Substituir por ' + d.add + ' unid.' : '',
+      dupSomar: () => this.aplicar(d.sku, d.atual + d.add),
+      dupSubstituir: () => this.aplicar(d.sku, d.add),
+      fecharDup: () => this.setState({ dup: null }),
+      toast: this.state.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
