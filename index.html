@@ -65,26 +65,31 @@ header { display: flex; align-items: baseline; justify-content: space-between; g
 .resp input { flex: 1; min-width: 0; background: transparent; border: none; border-bottom: 1px solid var(--n800); color: var(--text); font-size: 16px; padding: 6px 2px; }
 
 .card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-sm); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.linha { display: grid; grid-template-columns: 1fr 104px; gap: 10px; }
-.campo { display: flex; flex-direction: column; gap: 6px; }
-.rot { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--n500); }
-.campo input { height: 52px; background: var(--bg); border: 1px solid var(--n800); border-radius: var(--r-md); color: var(--text); font-size: 18px; padding: 0 12px; width: 100%; }
-#qtd { text-align: center; }
+.linha { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.linha3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.rot { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--n500); white-space: nowrap; }
+.campo input { height: 52px; background: var(--bg); border: 1px solid var(--n800); border-radius: var(--r-md); color: var(--text); font-size: 18px; padding: 0 10px; width: 100%; }
+#cx, #porcx, #qtd { text-align: center; }
+.dica { font-size: 12.5px; line-height: 1.5; color: var(--n500); text-align: center; min-height: 19px; font-variant-numeric: tabular-nums; }
+.dica b { color: var(--verde-claro); font-weight: 600; }
+.dica i { color: var(--accent-300); font-style: normal; }
 .btn-add { height: 52px; background: transparent; border: 1px solid var(--accent); color: var(--accent-200); border-radius: var(--r-md); font-size: 15px; font-weight: 500; letter-spacing: 0.02em; cursor: pointer; }
 .btn-add:active { border-color: var(--accent-400); color: var(--accent-100); }
 .erro { font-size: 12px; color: var(--alerta); }
 
-.totais { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 2px 10px; }
-.totais .nums { display: flex; gap: 18px; align-items: baseline; }
+.totais { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 22px 2px 10px; }
+.totais .nums { display: flex; gap: 18px; align-items: baseline; flex-wrap: wrap; }
 .num { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .num.verde { color: var(--verde); }
+.num.rox { color: var(--accent-300); }
 .uni { font-size: 11px; color: var(--n500); margin-left: 5px; text-transform: uppercase; letter-spacing: 0.08em; }
-.btn-limpar { background: transparent; border: none; color: var(--n600); font-size: 12px; cursor: pointer; padding: 4px; }
+.btn-limpar { background: transparent; border: none; color: var(--n600); font-size: 12px; cursor: pointer; padding: 4px; white-space: nowrap; }
 
 .vazio { border: 1px dashed var(--n800); border-radius: var(--r-lg); padding: 30px 18px; text-align: center; color: var(--n600); font-size: 13px; line-height: 1.6; }
 
 ul.itens { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-ul.itens li { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--sh-sm); padding: 10px 10px 10px 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+ul.itens li { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--sh-sm); padding: 10px 10px 10px 14px; display: grid; grid-template-columns: 1fr auto; gap: 8px 10px; align-items: center; }
 .it-sku { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
 .it-hora { font-size: 11px; color: var(--n600); }
 .it-ctrl { display: flex; align-items: center; gap: 4px; }
@@ -92,6 +97,11 @@ ul.itens li { background: var(--surface); border-radius: var(--r-md); box-shadow
 .it-ctrl button.step:active { background: var(--n900); }
 .it-ctrl input { width: 62px; height: 44px; text-align: center; background: var(--bg); border: 1px solid var(--n800); border-radius: var(--r-md); color: var(--text); font-size: 17px; font-variant-numeric: tabular-nums; }
 .it-ctrl button.del { width: 36px; height: 44px; flex: none; background: transparent; border: none; color: var(--n700); font-size: 16px; cursor: pointer; }
+.it-cx { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; border-top: 1px solid var(--n900); padding-top: 8px; font-size: 12px; color: var(--n600); font-variant-numeric: tabular-nums; }
+.it-cx input.mini { width: 66px; height: 34px; text-align: center; background: var(--bg); border: 1px solid var(--n800); border-radius: 6px; color: var(--n200); font-size: 13px; font-variant-numeric: tabular-nums; }
+.it-cx .sep { color: var(--n800); }
+.it-cx b { color: var(--accent-300); font-weight: 600; font-size: 12.5px; }
+.it-cx b.solto { color: var(--alerta); }
 
 .previa-sec { margin-top: 24px; border-top: 1px solid var(--n900); padding-top: 16px; }
 .previa-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
@@ -142,11 +152,22 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
           <span class="rot">SKU</span>
           <input id="sku" placeholder="ex. 7891234" autocapitalize="characters" autocomplete="off" enterkeyhint="next">
         </div>
+      </div>
+      <div class="linha3">
+        <div class="campo">
+          <span class="rot">Caixa</span>
+          <input id="cx" type="number" inputmode="numeric" placeholder="0" enterkeyhint="next">
+        </div>
+        <div class="campo">
+          <span class="rot">Por cx</span>
+          <input id="porcx" type="number" inputmode="numeric" placeholder="400" enterkeyhint="next">
+        </div>
         <div class="campo">
           <span class="rot">Qtd</span>
           <input id="qtd" type="number" inputmode="numeric" placeholder="1" enterkeyhint="done">
         </div>
       </div>
+      <div class="dica" id="dica"></div>
       <button class="btn-add" id="btnAdd">Adicionar à contagem</button>
       <div class="erro hide" id="erro"></div>
     </section>
@@ -154,12 +175,13 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
     <div class="totais">
       <div class="nums">
         <div><span class="num" id="totSkus">0</span><span class="uni">SKUs</span></div>
+        <div><span class="num rox" id="totCx">0</span><span class="uni">cx</span></div>
         <div><span class="num verde" id="totUnid">0</span><span class="uni">unid.</span></div>
       </div>
       <button class="btn-limpar hide" id="btnLimpar">Limpar tudo</button>
     </div>
 
-    <div class="vazio" id="vazio">Nenhum SKU contado ainda.<br>Digite o código e a quantidade acima.</div>
+    <div class="vazio" id="vazio">Nenhum SKU contado ainda.<br>Preencha o SKU e use <b>Caixa</b>, <b>Por cx</b> ou <b>Qtd</b>.</div>
 
     <ul class="itens" id="lista"></ul>
 
@@ -199,14 +221,17 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
 (function () {
   "use strict";
 
-  var KEY = "centralux-contagem-v1";
+  var KEY = "centralux-contagem-v2";
+  var KEY_ANTIGA = "centralux-contagem-v1";
   var itens = [];
   var dup = null;
+  var modo = "qtd"; // "cx" = o usuário dirige pelas caixas | "qtd" = dirige pelas unidades
 
   var $ = function (id) { return document.getElementById(id); };
-  var elResp = $("responsavel"), elSku = $("sku"), elQtd = $("qtd");
+  var elResp = $("responsavel"), elSku = $("sku");
+  var elCx = $("cx"), elPorCx = $("porcx"), elQtd = $("qtd"), elDica = $("dica");
   var elErro = $("erro"), elLista = $("lista"), elVazio = $("vazio");
-  var elTotSkus = $("totSkus"), elTotUnid = $("totUnid"), elLimpar = $("btnLimpar");
+  var elTotSkus = $("totSkus"), elTotCx = $("totCx"), elTotUnid = $("totUnid"), elLimpar = $("btnLimpar");
   var elPreviaSec = $("previaSec"), elPrevia = $("previa");
   var elOverlay = $("overlayDup"), elDupTexto = $("dupTexto");
   var elSomar = $("btnSomar"), elSubstituir = $("btnSubstituir");
@@ -220,8 +245,8 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
     return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
   }
 
-  function parseQtd(v) {
-    var n = parseInt(String(v).replace(/[^0-9-]/g, ""), 10);
+  function num(v) {
+    var n = parseInt(String(v).replace(/[^0-9]/g, ""), 10);
     return isNaN(n) ? null : n;
   }
 
@@ -229,6 +254,24 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
     return String(s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
+  }
+
+  /* ---------- caixas ---------- */
+  // Fonte da verdade de cada item: qtd (unidades) + porCx (unidades por caixa).
+  // As caixas são sempre derivadas: cx = qtd / porCx, resto = sobra em unidades.
+
+  function quebra(qtd, porCx) {
+    if (!porCx || porCx <= 0) return { cx: 0, resto: qtd, semCx: true };
+    return { cx: Math.floor(qtd / porCx), resto: qtd % porCx, semCx: false };
+  }
+
+  // "3 cx" | "1 cx + 100 un" | "100 un" | "-"
+  function fmtCx(qtd, porCx) {
+    var q = quebra(qtd, porCx);
+    if (q.semCx) return "-";
+    if (q.cx === 0) return q.resto + " un";
+    if (q.resto === 0) return q.cx + " cx";
+    return q.cx + " cx + " + q.resto + " un";
   }
 
   var toastTimer = null;
@@ -250,10 +293,22 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
   function carregar() {
     try {
       var raw = localStorage.getItem(KEY);
-      if (!raw) return;
+      if (!raw) {
+        // migra a contagem antiga (só tinha sku + qtd)
+        var velho = localStorage.getItem(KEY_ANTIGA);
+        if (!velho) return;
+        var v = JSON.parse(velho);
+        elResp.value = v.responsavel || "";
+        itens = (Array.isArray(v.itens) ? v.itens : []).map(function (i) {
+          return { sku: i.sku, qtd: i.qtd, porCx: 0, hora: i.hora || "" };
+        });
+        return;
+      }
       var d = JSON.parse(raw);
       elResp.value = d.responsavel || "";
-      itens = Array.isArray(d.itens) ? d.itens : [];
+      itens = (Array.isArray(d.itens) ? d.itens : []).map(function (i) {
+        return { sku: i.sku, qtd: i.qtd || 0, porCx: i.porCx || 0, hora: i.hora || "" };
+      });
     } catch (e) {}
   }
 
@@ -263,30 +318,92 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
     } catch (e) {}
   }
 
+  /* ---------- cálculo ao digitar ---------- */
+
+  function sincronizar(origem) {
+    if (origem === "cx") modo = "cx";
+    if (origem === "qtd") modo = "qtd";
+
+    var cx = num(elCx.value), pc = num(elPorCx.value), q = num(elQtd.value);
+
+    if (modo === "cx") {
+      // Caixa x Por cx  ->  Qtd final
+      if (pc && cx !== null) elQtd.value = cx * pc;
+      else if (cx === null && origem === "cx") elQtd.value = "";
+    } else {
+      // Qtd x Por cx  ->  quantas caixas
+      if (pc && q !== null) elCx.value = Math.floor(q / pc);
+      else if (q === null && origem === "qtd") elCx.value = "";
+    }
+    dica();
+  }
+
+  function dica() {
+    var pc = num(elPorCx.value), q = num(elQtd.value);
+    if (q === null || q === 0) { elDica.innerHTML = ""; return; }
+    if (!pc) {
+      elDica.innerHTML = "<b>" + q + " un</b> <i>· sem caixa</i>";
+      return;
+    }
+    var k = quebra(q, pc);
+    var txtCx = "<b>" + fmtCx(q, pc) + "</b>";
+    if (k.resto > 0 && k.cx > 0) txtCx += " <i>(caixa quebrada)</i>";
+    elDica.innerHTML = txtCx + " &nbsp;·&nbsp; total <b>" + q + " un</b> &nbsp;·&nbsp; cx de " + pc;
+  }
+
+  function limparCampos() {
+    elSku.value = ""; elCx.value = ""; elQtd.value = "";
+    // "Por cx" fica preenchido: normalmente o mesmo produto/embalagem se repete.
+    modo = "qtd";
+    dica();
+  }
+
   /* ---------- relatório ---------- */
 
   function totalUnidades() {
     return itens.reduce(function (a, i) { return a + i.qtd; }, 0);
   }
 
+  function totalCaixas() {
+    return itens.reduce(function (a, i) { return a + quebra(i.qtd, i.porCx).cx; }, 0);
+  }
+
+  function totalSoltas() {
+    return itens.reduce(function (a, i) { return a + quebra(i.qtd, i.porCx).resto; }, 0);
+  }
+
   function txt() {
-    var total = totalUnidades();
+    var total = totalUnidades(), tCx = totalCaixas(), tSol = totalSoltas();
     var agora = new Date();
     var data = agora.toLocaleDateString("pt-BR") + " " +
       agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    var w = 12;
-    itens.forEach(function (i) { if (i.sku.length > w) w = i.sku.length; });
+
+    var wSku = 10, wPor = 6, wCx = 15, wQtd = 7;
+    itens.forEach(function (i) { if (i.sku.length > wSku) wSku = i.sku.length; });
+
+    var linha = "-".repeat(wSku + 2 + wPor + 2 + wCx + 2 + wQtd);
     var l = [];
     l.push("CENTRALUX CONTAGEM");
     l.push("Data: " + data);
     l.push("Responsavel: " + (elResp.value.trim() || "-"));
-    l.push("SKUs contados: " + itens.length + "   Total de unidades: " + total);
-    l.push("------------------------------");
+    l.push("SKUs contados: " + itens.length + "   Total: " + total + " un");
+    l.push("Caixas fechadas: " + tCx + " cx   Unidades avulsas: " + tSol + " un");
+    l.push(linha);
+    l.push("SKU".padEnd(wSku, " ") + "  " + "POR CX".padStart(wPor, " ") + "  " +
+           "CAIXAS".padEnd(wCx, " ") + "  " + "QTD".padStart(wQtd, " "));
+    l.push(linha);
     itens.forEach(function (i) {
-      l.push(i.sku.padEnd(w, " ") + "  " + String(i.qtd).padStart(5, " "));
+      l.push(
+        i.sku.padEnd(wSku, " ") + "  " +
+        (i.porCx ? String(i.porCx) : "-").padStart(wPor, " ") + "  " +
+        fmtCx(i.qtd, i.porCx).padEnd(wCx, " ") + "  " +
+        String(i.qtd).padStart(wQtd, " ")
+      );
     });
-    l.push("------------------------------");
-    l.push("TOTAL".padEnd(w, " ") + "  " + String(total).padStart(5, " "));
+    l.push(linha);
+    l.push("TOTAL".padEnd(wSku, " ") + "  " + "".padStart(wPor, " ") + "  " +
+           (tCx + " cx + " + tSol + " un").padEnd(wCx, " ") + "  " +
+           String(total).padStart(wQtd, " "));
     return l.join("\n");
   }
 
@@ -301,6 +418,7 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
   function render() {
     var total = totalUnidades();
     elTotSkus.textContent = itens.length;
+    elTotCx.textContent = totalCaixas();
     elTotUnid.textContent = total;
     elVazio.classList.toggle("hide", itens.length > 0);
     elLimpar.classList.toggle("hide", itens.length === 0);
@@ -309,6 +427,8 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
     var html = "";
     for (var k = 0; k < itens.length; k++) {
       var i = itens[k];
+      var q = quebra(i.qtd, i.porCx);
+      var quebrado = !q.semCx && q.cx > 0 && q.resto > 0;
       html += '<li>' +
         '<div style="min-width:0;display:flex;flex-direction:column;gap:3px;">' +
           '<span class="it-sku">' + esc(i.sku) + '</span>' +
@@ -319,6 +439,15 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
           '<input type="number" inputmode="numeric" data-acao="qtd" data-i="' + k + '" value="' + i.qtd + '">' +
           '<button class="step" data-acao="mais" data-i="' + k + '">+</button>' +
           '<button class="del" data-acao="remover" data-i="' + k + '">&#10005;</button>' +
+        '</div>' +
+        '<div class="it-cx">' +
+          'por cx ' +
+          '<input class="mini" type="number" inputmode="numeric" data-acao="porcx" data-i="' + k + '" ' +
+            'value="' + (i.porCx || "") + '" placeholder="-">' +
+          '<span class="sep">|</span>' +
+          '<b class="' + (quebrado ? "solto" : "") + '">' + fmtCx(i.qtd, i.porCx) + '</b>' +
+          '<span class="sep">|</span>' +
+          '<span>' + i.qtd + ' un</span>' +
         '</div>' +
       '</li>';
     }
@@ -340,10 +469,12 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
 
   elLista.addEventListener("change", function (ev) {
     var inp = ev.target;
-    if (!inp.matches('input[data-acao="qtd"]')) return;
+    if (!inp.matches("input[data-acao]")) return;
     var k = parseInt(inp.getAttribute("data-i"), 10);
-    var n = parseQtd(inp.value);
-    itens[k].qtd = n === null ? 0 : n;
+    var acao = inp.getAttribute("data-acao");
+    var n = num(inp.value);
+    if (acao === "qtd") itens[k].qtd = n === null ? 0 : n;
+    else if (acao === "porcx") itens[k].porCx = n === null ? 0 : n;
     salvar(); render();
   });
 
@@ -351,47 +482,68 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
 
   function adicionar() {
     var sku = elSku.value.trim().toUpperCase();
-    var bruto = elQtd.value.trim();
-    var q = bruto === "" ? 1 : parseQtd(bruto);
+    var pc = num(elPorCx.value) || 0;
+    var cx = num(elCx.value);
+    var q = num(elQtd.value);
+
+    // Se só veio caixa + por cx, a quantidade é o produto dos dois.
+    if (q === null && cx !== null && pc) q = cx * pc;
+    if (q === null && elQtd.value.trim() === "" && cx === null) q = 1;
+
     if (!sku) { erro("Digite o SKU."); elSku.focus(); return; }
-    if (q === null || q === 0) { erro("Quantidade inválida."); elQtd.focus(); return; }
+    if (q === null || q === 0) { erro("Informe a quantidade (ou caixa + por cx)."); elQtd.focus(); return; }
     erro("");
 
     var existente = null;
     for (var k = 0; k < itens.length; k++) if (itens[k].sku === sku) { existente = itens[k]; break; }
 
     if (existente) {
-      dup = { sku: sku, atual: existente.qtd, add: q };
-      elDupTexto.textContent = sku + " já está na contagem com " + existente.qtd +
-        " unid. Você digitou " + q + ".";
-      elSomar.textContent = "Somar → " + (existente.qtd + q) + " unid.";
-      elSubstituir.textContent = "Substituir por " + q + " unid.";
+      var pcRef = pc || existente.porCx;
+      dup = { sku: sku, atual: existente.qtd, add: q, porCx: pc };
+      elDupTexto.textContent = sku + " já está na contagem com " + existente.qtd + " un" +
+        (pcRef ? " (" + fmtCx(existente.qtd, pcRef) + ")" : "") +
+        ". Você digitou " + q + " un" + (pcRef ? " (" + fmtCx(q, pcRef) + ")" : "") + ".";
+      elSomar.textContent = "Somar → " + (existente.qtd + q) + " un" +
+        (pcRef ? "  ·  " + fmtCx(existente.qtd + q, pcRef) : "");
+      elSubstituir.textContent = "Substituir por " + q + " un" +
+        (pcRef ? "  ·  " + fmtCx(q, pcRef) : "");
       elOverlay.classList.remove("hide");
       return;
     }
 
-    itens.unshift({ sku: sku, qtd: q, hora: hora() });
-    elSku.value = ""; elQtd.value = "";
+    itens.unshift({ sku: sku, qtd: q, porCx: pc, hora: hora() });
+    limparCampos();
     salvar(); render();
     elSku.focus();
   }
 
   function aplicarDup(novaQtd) {
     for (var k = 0; k < itens.length; k++) {
-      if (itens[k].sku === dup.sku) { itens[k].qtd = novaQtd; itens[k].hora = hora(); break; }
+      if (itens[k].sku === dup.sku) {
+        itens[k].qtd = novaQtd;
+        if (dup.porCx) itens[k].porCx = dup.porCx;
+        itens[k].hora = hora();
+        break;
+      }
     }
     dup = null;
     elOverlay.classList.add("hide");
-    elSku.value = ""; elQtd.value = "";
+    limparCampos();
     salvar(); render();
     elSku.focus();
   }
 
   $("btnAdd").addEventListener("click", adicionar);
-  elSku.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); elQtd.focus(); } });
+
+  elSku.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); elCx.focus(); } });
+  elCx.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); elPorCx.focus(); } });
+  elPorCx.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); elQtd.focus(); } });
   elQtd.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); adicionar(); } });
+
+  elCx.addEventListener("input", function () { erro(""); sincronizar("cx"); });
+  elPorCx.addEventListener("input", function () { erro(""); sincronizar("porcx"); });
+  elQtd.addEventListener("input", function () { erro(""); sincronizar("qtd"); });
   elSku.addEventListener("input", function () { erro(""); });
-  elQtd.addEventListener("input", function () { erro(""); });
   elResp.addEventListener("input", function () { salvar(); if (itens.length) elPrevia.textContent = txt(); });
 
   elSomar.addEventListener("click", function () { aplicarDup(dup.atual + dup.add); });
@@ -515,6 +667,7 @@ pre.previa { margin: 0; background: var(--bg); border: 1px solid var(--n900); bo
   });
   carregar();
   render();
+  dica();
 })();
 </script>
 </body>
